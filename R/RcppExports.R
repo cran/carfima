@@ -49,12 +49,12 @@ cpp_carfima_bayes <- function(loglik, Y, time, param_ini, param_scale, ar_p, ma_
     .Call(`_carfima_cpp_carfima_bayes`, loglik, Y, time, param_ini, param_scale, ar_p, ma_q, n_warm, n_sample)
 }
 
-cpp_carfima_loglik_nosigma <- function(Yold, time, p, q, parameter) {
-    .Call(`_carfima_cpp_carfima_loglik_nosigma`, Yold, time, p, q, parameter)
-}
-
 cpp_carfima_loglik <- function(Yold, time, p, q, parameter) {
     .Call(`_carfima_cpp_carfima_loglik`, Yold, time, p, q, parameter)
+}
+
+cpp_carfima_loglik_nosigma <- function(Yold, time, p, q, parameter) {
+    .Call(`_carfima_cpp_carfima_loglik_nosigma`, Yold, time, p, q, parameter)
 }
 
 rtruncnorm <- function(mean, sd, lbd, rbd) {

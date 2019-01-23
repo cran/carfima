@@ -76,9 +76,11 @@
 #' @import Rdpack
 #' @import DEoptim
 #' @import utils
+#' @importFrom truncnorm rtruncnorm dtruncnorm
+#' @importFrom invgamma dinvgamma
 #' @importFrom numDeriv hessian
 #' @importFrom MASS mvrnorm
-#' @importFrom stats integrate dnorm median
+#' @importFrom stats integrate dnorm median rexp rnorm
 #' @importFrom Rcpp evalCpp
 #' @useDynLib carfima, .registration=TRUE
 NULL

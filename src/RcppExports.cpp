@@ -181,21 +181,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cpp_carfima_loglik_nosigma
-Rcpp::List cpp_carfima_loglik_nosigma(arma::vec Yold, arma::vec time, int p, int q, arma::vec parameter);
-RcppExport SEXP _carfima_cpp_carfima_loglik_nosigma(SEXP YoldSEXP, SEXP timeSEXP, SEXP pSEXP, SEXP qSEXP, SEXP parameterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec >::type Yold(YoldSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type time(timeSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type q(qSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type parameter(parameterSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_carfima_loglik_nosigma(Yold, time, p, q, parameter));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_carfima_loglik
 Rcpp::List cpp_carfima_loglik(arma::vec Yold, arma::vec time, int p, int q, arma::vec parameter);
 RcppExport SEXP _carfima_cpp_carfima_loglik(SEXP YoldSEXP, SEXP timeSEXP, SEXP pSEXP, SEXP qSEXP, SEXP parameterSEXP) {
@@ -208,6 +193,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type q(qSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type parameter(parameterSEXP);
     rcpp_result_gen = Rcpp::wrap(cpp_carfima_loglik(Yold, time, p, q, parameter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_carfima_loglik_nosigma
+Rcpp::List cpp_carfima_loglik_nosigma(arma::vec Yold, arma::vec time, int p, int q, arma::vec parameter);
+RcppExport SEXP _carfima_cpp_carfima_loglik_nosigma(SEXP YoldSEXP, SEXP timeSEXP, SEXP pSEXP, SEXP qSEXP, SEXP parameterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type Yold(YoldSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type time(timeSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type parameter(parameterSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_carfima_loglik_nosigma(Yold, time, p, q, parameter));
     return rcpp_result_gen;
 END_RCPP
 }

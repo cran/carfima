@@ -46,51 +46,55 @@
 #' 
 #' @export
 carfima.loglik <- function(Y, time, ar.p, ma.q, parameter, fitted=FALSE){
-  tmp = cpp_carfima_loglik(Y, time, ar.p, ma.q, parameter)
-  
-  Gamma.Y      = tmp$Gamma_Y
-  Y            = tmp$Y
-  time.lag.cov = tmp$time_lag_cov
-  
-  
-  nu <- rep(NA, length(time))
-  Y.hat <- rep(NA, length(time))
-  theta <- matrix(NA, ncol = length(time) - 1, nrow = length(time) - 1)
-  
-  nu[1] <- Gamma.Y[1]
-  # nu_0 = Gamma.Y(0)
-  # nu starts with nu_0, and then nu_1, nu_2, ...
-  
-  Y.hat[1] <- 0
-  # Y.hat(t_1) <- 0
-  
-  for (i in 1 : (length(time) - 1)) {
-    for (k in 0 : (i - 1)) {
-      if (k == 0) {
-        theta[i, (i - k)] <- Gamma.Y[which(time.lag.cov ==
-                                             (time[i + 1] - time[k + 1]))[1] + 1] / nu[1]
-        # Gamma.Y starts with Gamma.Y(0), and then Gamma.Y(h_1), Gamma.Y(h_2), ...
-        # nu starts with nu_0, and then nu_1, nu_2, ...
-      } else {
-        theta[i, (i - k)] <- ( Gamma.Y[which(time.lag.cov ==
-                                               (time[i + 1] - time[k + 1]))[1] + 1] -
-                                 sum(sapply(0 : (k - 1), function(j) {
-                                   theta[k, k - j] * theta[i, i - j] * nu[j + 1]
-                                 })) ) / nu[k + 1]
-      }
-    }
-    Y.hat[i + 1] <- sum(theta[i, !is.na(theta[i, ])] * (Y[i : 1] - Y.hat[i : 1]))
-    nu[i + 1] <- nu[1] - sum(theta[i, !is.na(theta[i, ])]^2 * nu[i : 1])
-  }
-  
-  loglik <- sum(dnorm(Y, mean = Y.hat, sd = sqrt(nu), log = TRUE))
-  AIC <- -2 * (loglik - ar.p - ma.q - 2)
-  
-  if (fitted == FALSE) {
-    return(loglik)
+  if ((ar.p>1)||(ma.q>0)){
+    return(old.carfima.loglik(Y, time, ar.p, ma.q, parameter, fitted = FALSE))
   } else {
-    out <- list(fitted = Y.hat, AIC = AIC)
-    return(out)
+    tmp = cpp_carfima_loglik(Y, time, ar.p, ma.q, parameter)
+    
+    Gamma.Y      = tmp$Gamma_Y
+    Y            = tmp$Y
+    time.lag.cov = tmp$time_lag_cov
+    
+    
+    nu <- rep(NA, length(time))
+    Y.hat <- rep(NA, length(time))
+    theta <- matrix(NA, ncol = length(time) - 1, nrow = length(time) - 1)
+    
+    nu[1] <- Gamma.Y[1]
+    # nu_0 = Gamma.Y(0)
+    # nu starts with nu_0, and then nu_1, nu_2, ...
+    
+    Y.hat[1] <- 0
+    # Y.hat(t_1) <- 0
+    
+    for (i in 1 : (length(time) - 1)) {
+      for (k in 0 : (i - 1)) {
+        if (k == 0) {
+          theta[i, (i - k)] <- Gamma.Y[which(time.lag.cov ==
+                                               (time[i + 1] - time[k + 1]))[1] + 1] / nu[1]
+          # Gamma.Y starts with Gamma.Y(0), and then Gamma.Y(h_1), Gamma.Y(h_2), ...
+          # nu starts with nu_0, and then nu_1, nu_2, ...
+        } else {
+          theta[i, (i - k)] <- ( Gamma.Y[which(time.lag.cov ==
+                                                 (time[i + 1] - time[k + 1]))[1] + 1] -
+                                   sum(sapply(0 : (k - 1), function(j) {
+                                     theta[k, k - j] * theta[i, i - j] * nu[j + 1]
+                                   })) ) / nu[k + 1]
+        }
+      }
+      Y.hat[i + 1] <- sum(theta[i, !is.na(theta[i, ])] * (Y[i : 1] - Y.hat[i : 1]))
+      nu[i + 1] <- nu[1] - sum(theta[i, !is.na(theta[i, ])]^2 * nu[i : 1])
+    }
+    
+    loglik <- sum(dnorm(Y, mean = Y.hat, sd = sqrt(nu), log = TRUE))
+    AIC <- -2 * (loglik - ar.p - ma.q - 2)
+    
+    if (fitted == FALSE) {
+      return(loglik)
+    } else {
+      out <- list(fitted = Y.hat, AIC = AIC)
+      return(out)
+    } 
   }
 }
 

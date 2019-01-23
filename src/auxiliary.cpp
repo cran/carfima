@@ -327,10 +327,12 @@ arma::cx_mat gamma_y_multiplication(double x, arma::cx_vec eigval, arma::cx_mat 
 }
 std::complex<double> cx_quadratic(arma::cx_vec xvec, arma::cx_mat xmat){
   const int n = xvec.n_elem;
-  arma::cx_colvec xcolvec = xvec;
-  arma::cx_rowvec xrowvec = arma::conv_to<cx_rowvec>::from(xcolvec);
-    
-  std::complex<double> output = sum(xrowvec*xmat*xcolvec);;
+  // arma::cx_colvec xcolvec = xvec;
+  // arma::cx_rowvec xrowvec = arma::conv_to<cx_rowvec>::from(xcolvec); Rcpp::Rcout << "line cx_quadratic:331 complete" << std::endl;
+  //   
+  // std::complex<double> output = sum(xrowvec*xmat*xcolvec); Rcpp::Rcout << "line cx_quadratic:333 complete" << std::endl;
+  // std::complex<double> output = sum(xvec.t()*xmat*xvec);
+  std::complex<double> output = arma::as_scalar(xvec.t()*xmat*xvec); 
   return(output);
 }
 // [[Rcpp::export]]
@@ -341,9 +343,10 @@ arma::cx_vec Gamma_Y(arma::vec time_lag_cov, int p, arma::mat A, double H, arma:
   for (int i=0;i<Gamma_Y_out.n_elem;i++){
     Gamma_Y_out(i) = num_s;
   }
+  
   double C_H = H*(2*H - 1.0);          
-  arma::rowvec alpha  = A.row(p-1);    
-  arma::vec    alpha2 = arma::conv_to<vec>::from(alpha);
+  arma::rowvec alpha  = A.row(p-1);     
+  arma::vec    alpha2 = arma::conv_to<vec>::from(alpha); 
   arma::cx_vec eig_val;
   arma::cx_mat eig_vec;
   eig_gen(eig_val, eig_vec, A);        
@@ -353,10 +356,10 @@ arma::cx_vec Gamma_Y(arma::vec time_lag_cov, int p, arma::mat A, double H, arma:
     time_lag_cov_0(i) = time_lag_cov(i-1);
   } 
   
-  arma::mat V_ast = V_mat(p, alpha2);
+  arma::mat V_ast = V_mat(p, alpha2); 
   
-  arma::cx_mat g1_save = g1(time_lag_cov, eig_val, H);
-  arma::cx_mat g2_save = g2(time_lag_cov, eig_val, H);
+  arma::cx_mat g1_save = g1(time_lag_cov, eig_val, H); 
+  arma::cx_mat g2_save = g2(time_lag_cov, eig_val, H); 
   
   arma::cx_cube M1(p,p,(tlc + 1), fill::zeros);
   arma::cx_cube M2(p,p,(tlc + 1), fill::zeros);
@@ -368,6 +371,7 @@ arma::cx_vec Gamma_Y(arma::vec time_lag_cov, int p, arma::mat A, double H, arma:
       }
     }
   }
+  
   for (int i=0;i<(time_lag_cov.n_elem+1);i++){
     if (p < 2){
       M1.slice(i) = g1_save.row(i);
@@ -375,6 +379,7 @@ arma::cx_vec Gamma_Y(arma::vec time_lag_cov, int p, arma::mat A, double H, arma:
       M1.slice(i) = arma::diagmat(g1_save.row(i));
     }
   }
+  
   for (int i=0;i<(time_lag_cov.n_elem+1);i++){
     if (p < 2){
       M2.slice(i) = g2_save.row(i);
@@ -382,13 +387,14 @@ arma::cx_vec Gamma_Y(arma::vec time_lag_cov, int p, arma::mat A, double H, arma:
       M2.slice(i) = arma::diagmat(g2_save.row(i));
     }
   }
-
+  
   std::complex<double> gammaval(0,0);
   arma::cx_mat quadmat;
   for (int i=0;i<(time_lag_cov.n_elem+1);i++){
     quadmat = eig_vec*(M1.slice(i) + M2.slice(i) + gamma_y_multiplication(time_lag_cov_0(i), eig_val, M2.slice(0)))*eig_vec_inv*V_ast;
-    gammaval = cx_quadratic(beta, quadmat);
-    Gamma_Y_out(i) = (C_H * gammaval);
+    // gammaval = cx_quadratic(beta, quadmat); 
+    gammaval = arma::as_scalar(beta.t()*quadmat*beta);
+    Gamma_Y_out(i) = (C_H * gammaval); 
   }
   return(Gamma_Y_out);
 }
@@ -450,7 +456,8 @@ arma::cx_vec Gamma_Y_sigma(arma::vec time_lag_cov, int p, arma::mat A, double H,
   arma::cx_mat quadmat;
   for (int i=0;i<(time_lag_cov.n_elem+1);i++){
     quadmat = eig_vec*(M1.slice(i) + M2.slice(i) + gamma_y_multiplication(time_lag_cov_0(i), cxeig_val, M2.slice(0)))*eig_vec_inv*V_ast;
-    gammaval = cx_quadratic(beta, quadmat);
+    gammaval = arma::as_scalar(beta.t()*quadmat*beta);
+    // cx_quadratic(beta, quadmat);
     Gamma_Y_out(i) = (C_H * gammaval);
   }
   return(Gamma_Y_out);

@@ -40,8 +40,8 @@ Rcpp::List cpp_carfima_loglik_nosigma(arma::vec Yold, arma::vec time, int p, int
   arma::vec Y(Yold.n_elem, fill::zeros);
   for (int i=0;i<Yold.n_elem;i++){
     Y(i) = Yold(i)-mY;
-  }
-  
+  } 
+
   arma::mat time_lag(time.n_elem, time.n_elem, fill::zeros);
   for (int i=0;i<time.n_elem;i++){
     for (int j=0;j<time.n_elem;j++){
@@ -59,11 +59,11 @@ Rcpp::List cpp_carfima_loglik_nosigma(arma::vec Yold, arma::vec time, int p, int
     for (int i=0;i<(p-1);i++){
       A(i,i+1) = 1;
     }
-  }
-  A.row(p-1) = alpha;
-  
+  } 
+  A.row(p-1) = alpha.t();
+
   arma::cx_vec Gamma_Y_cx = Gamma_Y(time_lag_cov, p, A, H, beta, delta_p);
-  arma::vec Gamma_Y = arma::real(Gamma_Y_cx);
+  arma::vec Gamma_Y = arma::real(Gamma_Y_cx); 
 
   return(Rcpp::List::create(Rcpp::Named("GammaY") = Gamma_Y,
                             Rcpp::Named("Y") = Y,

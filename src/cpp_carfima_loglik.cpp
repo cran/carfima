@@ -71,7 +71,7 @@ Rcpp::List cpp_carfima_loglik(arma::vec Yold, arma::vec time, int p, int q, arma
       A(i,i+1) = 1;
     }
   }
-  A.row(p-1) = alpha;
+  A.row(p-1) = alpha.t(); // error
   
   arma::vec Gamma_Y = arma::real(Gamma_Y_sigma(time_lag_cov, p, A, H, beta, delta_p, sigma));
   

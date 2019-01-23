@@ -6,7 +6,7 @@ carfima.loglik.nosigma <- function(Y, time, ar.p, ma.q, parameter, sigma.hat = F
   GammaY       = tmp$GammaY
   Y            = tmp$Y
   time.lag.cov = tmp$time_lag_cov
-  
+
   nu <- rep(NA, length(time))
   Y.hat <- rep(NA, length(time))
   theta <- matrix(NA, ncol = length(time) - 1, nrow = length(time) - 1)
